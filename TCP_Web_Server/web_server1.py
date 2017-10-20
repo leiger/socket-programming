@@ -1,33 +1,26 @@
 # import socket module
 from socket import *
-import threading,time
+# In order to terminate the program
+import sys
 
-# the server creates a TCP socket
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
 # Prepare a sever socket
 serverSocket.bind(('127.0.0.1', 6789))
+serverSocket.listen(1)
 
-# the server listen for TCP connection requests from the client.
-# The parameter specifies the maximum number of queued connections
-serverSocket.listen(5)
-print('Ready to serve...')
-
-def tcpLink(connectionSocket, addr):
-    print('Accept new connection from %s:%s...' % addr)
+while True:
     # Establish the connection
+    print('Ready to serve...')
+
+    connectionSocket, addr = serverSocket.accept()
     try:
         message = connectionSocket.recv(1024)
-        # print(message)
-        # get URL
         filename = message.split()[1]
         f = open(filename[1:])
-        # print(filename)
-        # read by lines
         outputdata = f.readlines()
         #Send one HTTP header line into socket
         connectionSocket.send('HTTP/1.1 200 OK\r\n\r\n'.encode())
-
         #Send the content of the requested file to the client
         for i in range(0, len(outputdata)):
             connectionSocket.send(outputdata[i].encode())
@@ -41,12 +34,6 @@ def tcpLink(connectionSocket, addr):
         # Close client socket
         connectionSocket.close()
 
-while True:
-    # create a new socket in the server, called connectionSocket
-    connectionSocket, addr = serverSocket.accept()
-    # create a separate thread
-    t = threading.Thread(target=tcpLink, args=(connectionSocket, addr))
-    t.start()
-
 serverSocket.close()
+#Terminate the program after sending the corresponding data
 sys.exit()
