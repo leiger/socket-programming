@@ -8,13 +8,16 @@ import time
 serverName = '127.0.0.1'
 serverPort = 12000
 
-ping_times = 200
+ping_times = 10
 
 # packet loss rate
 pkt_loss_rate = 0
 
 # successful times
 success_ping = []
+
+#beat period
+BEAT_PERIOD = 5
 
 # create the client's socket
 clientSocket = socket(AF_INET, SOCK_DGRAM)
@@ -24,7 +27,7 @@ for i in range(0, ping_times):
         # sending time
         start_time = time.time()
         # send the resulting packet into the destination address
-        clientSocket.sendto('A'.encode('utf-8'), (serverName, serverPort))
+        clientSocket.sendto(str(start_time).encode('utf-8'), (serverName, serverPort))
         # client socket waiting time
         clientSocket.settimeout(2.0)
         # modifiedMessage: receive the message from serverClient
@@ -37,6 +40,9 @@ for i in range(0, ping_times):
         print("Ping %d %f" %(i+1, RTT_time))
 
         success_ping.append(RTT_time)
+
+        # sleep time
+        time.sleep(BEAT_PERIOD)
 
     except timeout:
         print("Request timed out")
@@ -55,8 +61,8 @@ def drawHist(data):
     pyplot.show()
 
 print("====================")
-print("minimum RTT: %f" %(max(success_ping)))
-print("maximum RTT: %f" %(min(success_ping)))
+print("minimum RTT: %f" %(min(success_ping)))
+print("maximum RTT: %f" %(max(success_ping)))
 print("average RTT: %f" %(mean(success_ping)))
 print("standard deviation RTT: %f" %(std(success_ping)))
 print("====================")
