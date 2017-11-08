@@ -1,7 +1,6 @@
 from socket import *
 import ssl
 import base64
-import time
 
 msg = "\r\n I love computer networks!"
 endmsg = "\r\n.\r\n"
